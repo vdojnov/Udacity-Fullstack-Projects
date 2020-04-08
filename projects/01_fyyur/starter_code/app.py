@@ -277,7 +277,7 @@ def create_venue_submission():
   finally:
       db.session.close()
   if error:
-      abort(400)
+      flash('An error occurred. Venue ' + data.name + ' could not be listed.')
   else:
       return render_template('pages/home.html')
 
@@ -498,7 +498,7 @@ def create_artist_submission():
   finally:
       db.session.close()
   if error:
-      abort(400)
+      flash('An error occurred. Artist ' + data.name + ' could not be listed.')
   else:
       return render_template('pages/home.html')
 
@@ -579,7 +579,7 @@ def create_show_submission():
     finally:
         db.session.close()
     if error:
-        flash('error')
+        flash('An error occurred. Show could not be listed.')
     else:
         return render_template('pages/home.html')
   # called to create new shows in the db, upon submitting new show listing form
