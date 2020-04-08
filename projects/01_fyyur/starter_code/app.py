@@ -80,7 +80,7 @@ class Show(db.Model):
 
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), primary_key=True )
     artist_id = db.Column(db.Integer, db.ForeignKey('artist.id'), primary_key=True )
-    start_time = db.Column(db.DateTime, nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False, primary_key=True)
 
 
 
@@ -278,6 +278,7 @@ def create_venue_submission():
       db.session.close()
   if error:
       flash('An error occurred. Venue ' + data.name + ' could not be listed.')
+      return redirect(url_for('create_venue_form'))
   else:
       return render_template('pages/home.html')
 
@@ -499,6 +500,7 @@ def create_artist_submission():
       db.session.close()
   if error:
       flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+      return redirect(url_for('create_artist_form'))
   else:
       return render_template('pages/home.html')
 
@@ -580,6 +582,7 @@ def create_show_submission():
         db.session.close()
     if error:
         flash('An error occurred. Show could not be listed.')
+        return redirect(url_for('create_shows'))
     else:
         return render_template('pages/home.html')
   # called to create new shows in the db, upon submitting new show listing form
