@@ -288,7 +288,20 @@ def delete_venue(venue_id):
 
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
   # clicking that button delete it from the db then redirect the user to the homepage
-  return None
+
+  try:
+      venues = Venue.query.get(venue_id).first()
+      db.session.delete(venues)
+      db.session.commit()
+      flash('The venue has been removed!')
+  except:
+      flash('Something went wrong')
+      db.session.rollback()
+  finally:
+      db.session.close()
+      return redirect(url_for('venues'))
+
+
 
 #  Artists
 #  ----------------------------------------------------------------
@@ -450,8 +463,6 @@ def shows():
 
   shows = Show.query.filter(Show.start_time > datetime.now()).all()
   data = [show.get_show() for show in shows]
-
-
   return render_template('pages/shows.html', shows=data)
 
 @app.route('/shows/create')
@@ -459,6 +470,7 @@ def create_shows():
   # renders form. do not touch.
   form = ShowForm()
   return render_template('forms/new_show.html', form=form)
+
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
