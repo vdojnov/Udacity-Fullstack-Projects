@@ -1,5 +1,5 @@
 # https://github.com/cmccarthy15/Workshop_Exercise/blob/master/Requests_Starter/backend/flaskr/__init__.py
-
+# Vurtaul Env: .\env\Scripts\activate   and   deactivate
 
 import os
 from flask import Flask, request, abort, jsonify
@@ -19,16 +19,33 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
+  CORS(app)
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+    return response
 
   '''
   @TODO:
   Create an endpoint to handle GET requests
   for all available categories.
   '''
+
+  @app.route('/categories', methods=['GET'])
+  def get_catagories():
+      categories = Category.query.all()
+
+      result = jsonify({
+      "categories": [category.type for category in categories]
+      })
+
+      return result
+
 
 
   '''
@@ -43,6 +60,26 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions.
   '''
+
+
+  # @app.route('/questions', methods=['GET'])
+  # def get_questions():
+  #   page = request.args.get('page', 1, type=int)
+  #   questions = Question.query.all()
+  #   catagories = Category.query.first()
+  #   q = [que.question for que in questions]
+  #   c = catagories.type
+  #
+  #
+  #   return jsonify ({
+  #   'questions': q,
+  #   'success': True,
+  #   'catagories': c,
+  #   'total_questions': 4,
+  #   'current_category': 'hello',
+  #   'page': page
+  #   })
+
 
   '''
   @TODO:
