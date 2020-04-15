@@ -73,7 +73,12 @@ def create_app(test_config=None):
 
     categoriess = Category.query.all()
     total_questions = len(questionss)
-    catagories = [category.type for category in categoriess]
+
+    catagories = [category.format() for category in categoriess]
+    new_obj = {}
+    for i in catagories:
+        new_obj[i['id']] = i['type']
+
     # a = []
     # for i in catagories:
     #     new_obj = {}
@@ -84,7 +89,7 @@ def create_app(test_config=None):
         'success': True,
         'questions': questions,
         'total_questions': total_questions,
-        'categories': catagories,
+        'categories': new_obj,
         'current_category': None
     })
 
@@ -105,6 +110,8 @@ def create_app(test_config=None):
       'total_questions': len(q_formated),
       'current_category': current_cat.format()
       })
+
+
 
 
   '''
