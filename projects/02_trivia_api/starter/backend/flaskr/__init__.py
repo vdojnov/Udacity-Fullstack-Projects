@@ -41,6 +41,7 @@ def create_app(test_config=None):
       categories = Category.query.all()
 
       result = jsonify({
+        'success': True,
         "categories": [category.type for category in categories]
       })
 
@@ -68,38 +69,42 @@ def create_app(test_config=None):
     start = (page - 1 ) * QUESTIONS_PER_PAGE
     end = page * QUESTIONS_PER_PAGE
     questionss = Question.query.all()
-    questions = [que.question for que in questionss][start:end]
+    questions = [que.format() for que in questionss][start:end]
 
     categoriess = Category.query.all()
     total_questions = len(questionss)
     catagories = [category.type for category in categoriess]
-
-
+    # a = []
+    # for i in catagories:
+    #     new_obj = {}
+    #     new_obj[i['id']] = i['type']
+    #     a.append(new_obj)
 
     return jsonify ({
-    # 'success': True,
-    'questions': questions,
-    'total_questions': total_questions,
-    'categories': catagories,
-    'current_category': None
-    # 'page': page
+        'success': True,
+        'questions': questions,
+        'total_questions': total_questions,
+        'categories': catagories,
+        'current_category': None
     })
 
 
-  #
-  # @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
-  # def get_questions(cat_id):
-  #     category = Category.query.get(cat_id)
-  #     questionss = Question.query.filter(Question.category==cat_id).all()
-  #     total_questions = Question.query.count()
-  #     questions = [q.question for q in questionss]
-  #
-  #
-  #     return jsonify({
-  #     'questions': questions,
-  #     'total_questions': total_questions,
-  #     'current_category': None
-  #     })
+
+  @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
+  def get_category_questions(cat_id):
+      a = cat_id + 1
+      questions = Question.query.filter(Question.category == int(a))
+      q_formated = [q.format() for q in questions]
+      current_cat = Category.query.get(int(a))
+      cat = Category.query.all()
+      all_cat = [c.type for c in cat]
+
+
+      return jsonify({
+      'questions': [q.format() for q in questions],
+      'total_questions': len(q_formated),
+      'current_category': current_cat.format()
+      })
 
 
   '''
