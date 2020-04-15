@@ -121,10 +121,36 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page.
   '''
-  @app.route('/question/<int:q_id>', methonds=['DELETE'])
-  def delete_question(q_id):
-      
+  @app.route('/questions/<int:q_id>', methods=['DELETE'])
+  def delete_questions(q_id):
+      del_question = Question.query.filter(Question.id == int(q_id)).one_or_none()
+      del_question.delete()
 
+      # flash('There was an error trying to delete this questions')
+      # db.session.rollback()
+
+      page = request.args.get('page', 1, type=int)
+      start = (page - 1 ) * QUESTIONS_PER_PAGE
+      end = page * QUESTIONS_PER_PAGE
+      questionss = Question.query.all()
+      questions = [que.format() for que in questionss][start:end]
+
+      categoriess = Category.query.all()
+      total_questions = len(questionss)
+
+      catagories = [category.format() for category in categoriess]
+      new_obj = {}
+      for i in catagories:
+          new_obj[i['id']] = i['type']
+
+      return jsonify({
+          'success': True,
+          'questions': questions,
+          'total_questions': total_questions,
+          'categories': new_obj,
+          'current_category': None
+
+      })
 
 
   '''
@@ -137,6 +163,8 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
+
+
 
   '''
   @TODO:
