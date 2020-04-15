@@ -41,7 +41,7 @@ def create_app(test_config=None):
       categories = Category.query.all()
 
       result = jsonify({
-      "categories": [category.type for category in categories]
+        "categories": [category.type for category in categories]
       })
 
       return result
@@ -62,23 +62,44 @@ def create_app(test_config=None):
   '''
 
 
-  # @app.route('/questions', methods=['GET'])
-  # def get_questions():
-  #   page = request.args.get('page', 1, type=int)
-  #   questions = Question.query.all()
-  #   catagories = Category.query.first()
-  #   q = [que.question for que in questions]
-  #   c = catagories.type
+  @app.route('/questions', methods=['GET'])
+  def get_questions():
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1 ) * QUESTIONS_PER_PAGE
+    end = page * QUESTIONS_PER_PAGE
+    questionss = Question.query.all()
+    questions = [que.question for que in questionss][start:end]
+
+    categoriess = Category.query.all()
+    total_questions = len(questionss)
+    catagories = [category.type for category in categoriess]
+
+
+
+    return jsonify ({
+    # 'success': True,
+    'questions': questions,
+    'total_questions': total_questions,
+    'categories': catagories,
+    'current_category': None
+    # 'page': page
+    })
+
+
+  #
+  # @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
+  # def get_questions(cat_id):
+  #     category = Category.query.get(cat_id)
+  #     questionss = Question.query.filter(Question.category==cat_id).all()
+  #     total_questions = Question.query.count()
+  #     questions = [q.question for q in questionss]
   #
   #
-  #   return jsonify ({
-  #   'questions': q,
-  #   'success': True,
-  #   'catagories': c,
-  #   'total_questions': 4,
-  #   'current_category': 'hello',
-  #   'page': page
-  #   })
+  #     return jsonify({
+  #     'questions': questions,
+  #     'total_questions': total_questions,
+  #     'current_category': None
+  #     })
 
 
   '''
