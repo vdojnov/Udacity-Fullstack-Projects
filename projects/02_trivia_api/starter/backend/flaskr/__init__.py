@@ -38,11 +38,15 @@ def create_app(test_config=None):
 
   @app.route('/categories', methods=['GET'])
   def get_catagories():
-      categories = Category.query.all()
+      categoriess = Category.query.all()
+      catagories = [category.format() for category in categoriess]
+      new_obj = {}
+      for i in catagories:
+          new_obj[i['id']] = i['type']
 
       result = jsonify({
         'success': True,
-        "categories": [category.type for category in categories]
+        "categories": new_obj
       })
 
       return result
@@ -98,7 +102,7 @@ def create_app(test_config=None):
   @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
   def get_category_questions(cat_id):
       a = cat_id
-      questions = Question.query.filter(Question.category == int(a))
+      questions = Question.query.order_by(Question.id).filter(Question.category == int(a))
       q_formated = [q.format() for q in questions]
       current_cat = Category.query.get(int(a))
       cat = Category.query.all()
@@ -132,7 +136,7 @@ def create_app(test_config=None):
       page = request.args.get('page', 1, type=int)
       start = (page - 1 ) * QUESTIONS_PER_PAGE
       end = page * QUESTIONS_PER_PAGE
-      questionss = Question.query.all()
+      questionss = Question.query.order_by(Question.id).all()
       questions = [que.format() for que in questionss][start:end]
 
       categoriess = Category.query.all()
@@ -163,6 +167,29 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
+  @app.route('/questions', methods=['POST'])
+  def post_question():
+      body = request.get_json()
+
+      nquestion = body.get('question')
+      nanswer = body.get('answer')
+      ndifficulty = body.get('difficulty')
+      ncategory = body.get('category')
+
+      try:
+          add_question = Question(question=nquestion, answer=nanswer, difficulty=ndifficulty, category=ncategory)
+          add_question.insert()
+
+          return jsonify({
+            'success': True,
+          })
+      except:
+          abort(422)
+
+
+
+
+
 
 
 
