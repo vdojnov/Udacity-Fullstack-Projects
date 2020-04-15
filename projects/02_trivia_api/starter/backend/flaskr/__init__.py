@@ -92,7 +92,7 @@ def create_app(test_config=None):
 
   @app.route('/categories/<int:cat_id>/questions', methods=['GET'])
   def get_category_questions(cat_id):
-      a = cat_id + 1
+      a = cat_id
       questions = Question.query.filter(Question.category == int(a))
       q_formated = [q.format() for q in questions]
       current_cat = Category.query.get(int(a))
