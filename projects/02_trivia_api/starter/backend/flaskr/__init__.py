@@ -2,7 +2,7 @@
 # Vurtaul Env: .\env\Scripts\activate   and   deactivate
 
 import os
-from flask import Flask, request, abort, jsonify
+from flask import Flask, request, abort, jsonify, url_for, redirect, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
@@ -110,9 +110,9 @@ def create_app(test_config=None):
 
 
       return jsonify({
-      'questions': [q.format() for q in questions],
-      'total_questions': len(q_formated),
-      'current_category': current_cat.format()
+          'questions': [q.format() for q in questions],
+          'total_questions': len(q_formated),
+          'current_category': current_cat.format()
       })
 
 
@@ -139,9 +139,9 @@ def create_app(test_config=None):
       questionss = Question.query.order_by(Question.id).all()
       questions = [que.format() for que in questionss][start:end]
 
-      categoriess = Category.query.all()
-      total_questions = len(questionss)
 
+      total_questions = len(questionss)
+      categoriess = Category.query.all()
       catagories = [category.format() for category in categoriess]
       new_obj = {}
       for i in catagories:
@@ -167,31 +167,6 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
-  @app.route('/questions', methods=['POST'])
-  def post_question():
-      body = request.get_json()
-
-      nquestion = body.get('question')
-      nanswer = body.get('answer')
-      ndifficulty = body.get('difficulty')
-      ncategory = body.get('category')
-
-      try:
-          add_question = Question(question=nquestion, answer=nanswer, difficulty=ndifficulty, category=ncategory)
-          add_question.insert()
-
-          return jsonify({
-            'success': True,
-          })
-      except:
-          abort(422)
-
-
-
-
-
-
-
 
   '''
   @TODO:
@@ -204,6 +179,45 @@ def create_app(test_config=None):
   Try using the word "title" to start.
   '''
 
+  @app.route('/questions', methods=['POST'])
+  def post_question():
+      body = request.get_json()
+
+      search_term = body.get('searchTerm', None)
+
+      if search_term is not None:
+          question = Question.query.filter(Question.question.ilike('%'+ search_term +'%'))
+          q_formated = [que.format() for que in question]
+
+          categoriess = Category.query.all()
+          catagories = [category.format() for category in categoriess]
+          new_obj = {}
+          for i in catagories:
+              new_obj[i['id']] = i['type']
+
+          return jsonify({
+          'success': True,
+          'questions': q_formated
+          })
+
+
+
+      nquestion = body.get('question', None)
+      nanswer = body.get('answer', None)
+      ndifficulty = body.get('difficulty', None)
+      ncategory = body.get('category', None)
+
+
+      try:
+          add_question = Question(question=nquestion, answer=nanswer, difficulty=ndifficulty, category=ncategory)
+          add_question.insert()
+
+          return jsonify({
+            'success': True,
+          })
+      except:
+          abort(422)
+
   '''
   @TODO:
   Create a GET endpoint to get questions based on category.
@@ -212,6 +226,7 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that
   category to be shown.
   '''
+  # done with the first get
 
 
   '''
@@ -225,6 +240,10 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not.
   '''
+  @app.route('/quizzes', methods=['POST'])
+  def play_quiz():
+      
+
 
   '''
   @TODO:
