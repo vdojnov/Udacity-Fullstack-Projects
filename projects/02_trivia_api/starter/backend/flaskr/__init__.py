@@ -2,10 +2,11 @@
 # Vurtaul Env: .\env\Scripts\activate   and   deactivate
 
 import os
-from flask import Flask, request, abort, jsonify, url_for, redirect, render_template
+from flask import Flask, request, abort, jsonify, url_for, redirect, render_template, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+from  sqlalchemy.sql.expression import func, select
 
 from models import setup_db, Question, Category
 
@@ -242,7 +243,51 @@ def create_app(test_config=None):
   '''
   @app.route('/quizzes', methods=['POST'])
   def play_quiz():
-      
+      body = request.get_json()
+
+      previous_questions = body.get('previous_questions', None)
+      quiz_category = body.get('quiz_category', None)
+
+     # TESTTTT
+      # random_q = Question.query.order_by(func.random()).all()
+      # # del random_q[0]
+
+       # previous_questions = [10, 11]
+       # quiz_category = {type: "click", id: '6'}
+      # random_q = Question.query.order_by(func.random()).filter(Question.category == 6).all()
+
+
+
+      if quiz_category['id'] == 0:
+          random_q = Question.query.order_by(func.random()).all()
+      else:
+          random_q = Question.query.order_by(func.random()).filter(Question.category == int(quiz_category['id'])).all()
+
+
+      if previous_questions:
+          for question_id in previous_questions:
+              repeated = Question.query.filter(Question.id == question_id).first()
+              if repeated in random_q:
+                  random_q.remove(repeated)
+
+      if not random_q:
+          result = False
+      else:
+          result = random_q[0].format()
+
+
+      # 1. Choose where there is a category or not and create a list
+      # 2. for the first one load all questions, then loop and remove all the questions in the list (if thing in some_list: some_list.remove(thing))
+
+
+      return jsonify ({
+        'question': result
+        # 'question': [r.format() for r in random_q],
+        # 'lenght': len([r.format() for r in random_q])
+      })
+
+
+
 
 
   '''

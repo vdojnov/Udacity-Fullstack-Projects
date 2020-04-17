@@ -151,6 +151,7 @@ class QuizView extends Component {
   }
 
   renderPlay(){
+    console.log(this.state.previousQuestions)
     return this.state.previousQuestions.length === questionsPerPlay || this.state.forceEnd
       ? this.renderFinalScore()
       : this.state.showAnswer
@@ -168,6 +169,7 @@ class QuizView extends Component {
 
 
   render() {
+    console.log(this.state.quizCategory)
     return this.state.quizCategory
         ? this.renderPlay()
         : this.renderPrePlay()
