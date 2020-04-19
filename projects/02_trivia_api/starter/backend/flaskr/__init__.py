@@ -127,7 +127,8 @@ def create_app(test_config=None):
           return jsonify({
               'questions': q_formated,
               'total_questions': len(q_formated),
-              'current_category': current_cat.type
+              'current_category': current_cat.format(),
+              'success': True
           })
 
       except:
@@ -279,7 +280,9 @@ def create_app(test_config=None):
           previous_questions = body.get('previous_questions', None)
           quiz_category = body.get('quiz_category', None)
 
+          out_of_range = Category.query.all().count()
 
+          
           if quiz_category['id'] == 0:
               random_q = Question.query.order_by(func.random()).all()
           else:
@@ -300,7 +303,8 @@ def create_app(test_config=None):
 
 
           return jsonify ({
-            'question': result
+            'question': result,
+            'success': True
           })
       except:
           abort(422)
@@ -324,7 +328,7 @@ def create_app(test_config=None):
       }), 404
 
   @app.errorhandler(422)
-  def unprocessable():
+  def unprocessable(error):
       return jsonify({
       'success': False,
       'error': 422,
@@ -332,7 +336,7 @@ def create_app(test_config=None):
       }), 422
 
   @app.errorhandler(500)
-  def unprocessable():
+  def unprocessable(error):
       return jsonify({
       'success': False,
       'error': 500,
@@ -340,7 +344,7 @@ def create_app(test_config=None):
       }), 500
 
   @app.errorhandler(400)
-  def unprocessable():
+  def unprocessable(error):
       return jsonify({
       'success': False,
       'error': 400,
