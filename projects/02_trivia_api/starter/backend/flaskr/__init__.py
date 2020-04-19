@@ -280,8 +280,6 @@ def create_app(test_config=None):
           previous_questions = body.get('previous_questions', None)
           quiz_category = body.get('quiz_category', None)
 
-          out_of_range = Category.query.all().count()
-
           
           if quiz_category['id'] == 0:
               random_q = Question.query.order_by(func.random()).all()
