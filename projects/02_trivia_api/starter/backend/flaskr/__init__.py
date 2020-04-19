@@ -331,5 +331,21 @@ def create_app(test_config=None):
       'message': 'Unprocessable'
       }), 422
 
+  @app.errorhandler(500)
+  def unprocessable():
+      return jsonify({
+      'success': False,
+      'error': 500,
+      'message': 'Internal Server Error'
+      }), 500
+
+  @app.errorhandler(400)
+  def unprocessable():
+      return jsonify({
+      'success': False,
+      'error': 400,
+      'message': 'Bad Request'
+      }), 400
+
 
   return app
