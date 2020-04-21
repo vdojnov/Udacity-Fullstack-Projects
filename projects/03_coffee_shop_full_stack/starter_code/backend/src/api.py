@@ -1,3 +1,6 @@
+#$env:FLASK_APP = "api.py"
+#$env:FLASK_ENV = "development"
+
 import os
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
