@@ -79,13 +79,16 @@ def post_drink(token):
 
         drink = Drink(title=title, recipe=json.dumps(recipe))
         drink.insert()
+
+       
     except:
         abort(422)
 
+    all_drinks = Drink.query.all()
 
     return jsonify({
         "success": True,
-        "drinks": drink.long()
+        "drinks": [d.long() for d in all_drinks]
     })
 
 
@@ -102,7 +105,7 @@ def post_drink(token):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks/<id>', methods=['PATCH'])
+@app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def edit_drinks(token, id):
 
@@ -111,24 +114,26 @@ def edit_drinks(token, id):
 
     body = request.get_json()
 
-    title = body.get('title', None)
-    recipe = body.get('recipe', None)
+    new_title = body.get('title', None)
+    new_recipe = body.get('recipe', None)
 
     update = Drink.query.get(id)
 
     try:
-        if title:
-            update.title = title
-        if recipe:
-            update.recipe = recipe
+        if new_title:
+            update.title = new_title
+        if new_recipe:
+            update.recipe = json.dumps(new_recipe)
 
         update.update()
     except:
         abort(422)
 
+    drinks = Drink.query.all()
+
     return jsonify({
         'success': True,
-        'drinks': update.long()
+        'drinks': [d.long() for d in drinks]
     })
 
 
@@ -197,3 +202,18 @@ def not_found(error):
 @TODO implement error handler for AuthError
     error handler should conform to general task above
 '''
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": "Unauthorized Error"
+    }), 401
+
+@app.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "Bad Request"
+    }), 400
