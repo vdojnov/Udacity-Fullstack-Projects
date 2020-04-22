@@ -35,29 +35,17 @@ def get_token_auth_header():
     """
     auth = request.headers.get('Authorization', None)
     if not auth:
-        raise AuthError({
-            'code': 'authorization_header_missing',
-            'description': 'Authorization header is expected.'
-        }, 401)
+        abort(401)
 
     parts = auth.split()
     if parts[0].lower() != 'bearer':
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Authorization header must start with "Bearer".'
-        }, 401)
+        abort(401)
 
     elif len(parts) == 1:
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Token not found.'
-        }, 401)
+        abort(401)
 
     elif len(parts) > 2:
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Authorization header must be bearer token.'
-        }, 401)
+        abort(401)
 
     token = parts[1]
     return token
@@ -161,9 +149,9 @@ def requires_auth(permissions=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            token = get_token_auth_header()
+            jwt = get_token_auth_header()
             try:
-                payload = verify_decode_jwt(token)
+                payload = verify_decode_jwt(jwt)
             except:
                 abort(401)
 
