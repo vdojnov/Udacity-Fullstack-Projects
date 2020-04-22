@@ -31,12 +31,13 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-@app.route('/')
+@app.route('/drinks')
 def test():
-    a = Drink.query.first()
+    drinks = Drink.query.all()
 
     return jsonify({
-        'a': a
+        "success": True, 
+        "drinks":[drink.short() for drink in drinks]
     })
 
 '''
@@ -47,7 +48,15 @@ def test():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
+def get_drink_details(token):
+    drinks = Drink.query.all()
 
+    return jsonify({
+        "success": True, 
+        "drinks":[drink.long() for drink in drinks]
+    })
 
 '''
 @TODO implement endpoint
@@ -58,6 +67,28 @@ def test():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
+def post_drink(token):
+   
+    try:
+        body = request.get_json()
+
+        title = body.get('title')
+        recipe = body.get('recipe')
+
+        drink = Drink(title=title, recipe=json.dumps(recipe)) 
+        drink.insert()
+    except:
+        abort(403)
+    
+
+    return jsonify({
+        "success": True, 
+        "drinks": drink.long()
+    })
+
+
 
 
 '''
@@ -71,7 +102,36 @@ def test():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def edit_drinks(token, id):
+    
+    if not id:
+        abort(404)
 
+    body = request.get_json()
+
+    title = body.get('title', None)
+    recipe = body.get('recipe', None)
+
+    update = Drink.query.get(id)
+
+    if title:
+        update.title = title
+    if recipe:
+        update.recipe = recipe 
+    
+    update.update()
+
+    return jsonify({
+        'success': True,
+        'drinks': update.long()
+    })
+
+    # drink = Drink.query.get(id)
+
+
+    
 
 '''
 @TODO implement endpoint
