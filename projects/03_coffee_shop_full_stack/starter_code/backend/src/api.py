@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 #$env:FLASK_APP = "api.py"
 #$env:FLASK_ENV = "development"
-# .\env\Scripts\activate 
+# .\env\Scripts\activate
 
+||||||| merged common ancestors
+=======
+#$env:FLASK_APP = "api.py"
+#$env:FLASK_ENV = "development"
+
+>>>>>>> 90489b0b0b274085fcc0be0ce32b1b29c84dee8b
 import os
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
@@ -36,7 +43,7 @@ def get_drinks():
     drinks = Drink.query.all()
 
     return jsonify({
-        "success": True, 
+        "success": True,
         "drinks":[drink.short() for drink in drinks]
     })
 
@@ -54,7 +61,7 @@ def get_drink_details(token):
     drinks = Drink.query.all()
 
     return jsonify({
-        "success": True, 
+        "success": True,
         "drinks":[drink.long() for drink in drinks]
     })
 
@@ -70,21 +77,21 @@ def get_drink_details(token):
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def post_drink(token):
-   
+
     try:
         body = request.get_json()
 
         title = body.get('title')
         recipe = body.get('recipe')
 
-        drink = Drink(title=title, recipe=json.dumps(recipe)) 
+        drink = Drink(title=title, recipe=json.dumps(recipe))
         drink.insert()
     except:
         abort(422)
-    
+
 
     return jsonify({
-        "success": True, 
+        "success": True,
         "drinks": drink.long()
     })
 
@@ -105,7 +112,7 @@ def post_drink(token):
 @app.route('/drinks/<id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def edit_drinks(token, id):
-    
+
     if not id:
         abort(404)
 
@@ -120,8 +127,8 @@ def edit_drinks(token, id):
         if title:
             update.title = title
         if recipe:
-            update.recipe = recipe 
-        
+            update.recipe = recipe
+
         update.update()
     except:
         abort(422)
@@ -131,7 +138,7 @@ def edit_drinks(token, id):
         'drinks': update.long()
     })
 
-        
+
 
 '''
 @TODO implement endpoint
@@ -165,7 +172,7 @@ Example error handling for unprocessable entity
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-                    "success": False, 
+                    "success": False,
                     "error": 422,
                     "message": "unprocessable"
                     }), 422
@@ -174,7 +181,7 @@ def unprocessable(error):
 @TODO implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
              jsonify({
-                    "success": False, 
+                    "success": False,
                     "error": 404,
                     "message": "resource not found"
                     }), 404
@@ -183,17 +190,17 @@ def unprocessable(error):
 
 '''
 @TODO implement error handler for 404
-    error handler should conform to general task above 
+    error handler should conform to general task above
 '''
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({
-        "success": False, 
+        "success": False,
         "error": 404,
         "message": "resource not found"
     }), 404
 
 '''
 @TODO implement error handler for AuthError
-    error handler should conform to general task above 
+    error handler should conform to general task above
 '''

@@ -171,4 +171,11 @@ def requires_auth(permissions=''):
 
             return f(payload, *args, **kwargs)
         return wrapper
+<<<<<<< HEAD
     return requires_auth_decorator
+||||||| merged common ancestors
+    return requires_auth_decorator
+=======
+    return requires_auth_decorator
+    
+>>>>>>> 90489b0b0b274085fcc0be0ce32b1b29c84dee8b
