@@ -32,7 +32,7 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks')
-def test():
+def get_drinks():
     drinks = Drink.query.all()
 
     return jsonify({
@@ -80,7 +80,7 @@ def post_drink(token):
         drink = Drink(title=title, recipe=json.dumps(recipe)) 
         drink.insert()
     except:
-        abort(403)
+        abort(422)
     
 
     return jsonify({
@@ -116,22 +116,22 @@ def edit_drinks(token, id):
 
     update = Drink.query.get(id)
 
-    if title:
-        update.title = title
-    if recipe:
-        update.recipe = recipe 
-    
-    update.update()
+    try:
+        if title:
+            update.title = title
+        if recipe:
+            update.recipe = recipe 
+        
+        update.update()
+    except:
+        abort(422)
 
     return jsonify({
         'success': True,
         'drinks': update.long()
     })
 
-    # drink = Drink.query.get(id)
-
-
-    
+        
 
 '''
 @TODO implement endpoint
@@ -143,6 +143,19 @@ def edit_drinks(token, id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def delete_drinks(token, id):
+    try:
+        drink = Drink.query.get(id)
+        drink.delete()
+    except:
+        abort(422)
+
+    return jsonify({
+        'success': True,
+        'delete': id
+    })
 
 
 ## Error Handling
@@ -172,7 +185,13 @@ def unprocessable(error):
 @TODO implement error handler for 404
     error handler should conform to general task above 
 '''
-
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        "success": False, 
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
 '''
 @TODO implement error handler for AuthError
