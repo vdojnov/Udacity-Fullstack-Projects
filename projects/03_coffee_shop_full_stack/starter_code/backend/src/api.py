@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 #$env:FLASK_APP = "api.py"
 #$env:FLASK_ENV = "development"
 # .\env\Scripts\activate
 
-||||||| merged common ancestors
-=======
-#$env:FLASK_APP = "api.py"
-#$env:FLASK_ENV = "development"
-
->>>>>>> 90489b0b0b274085fcc0be0ce32b1b29c84dee8b
 import os
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
