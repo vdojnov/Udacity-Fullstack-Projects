@@ -1,5 +1,6 @@
 #$env:FLASK_APP = "api.py"
 #$env:FLASK_ENV = "development"
+# .\env\Scripts\activate 
 
 import os
 from flask import Flask, request, jsonify, abort
@@ -30,7 +31,13 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+@app.route('/')
+def test():
+    a = Drink.query.first()
 
+    return jsonify({
+        'a': a
+    })
 
 '''
 @TODO implement endpoint
