@@ -52,6 +52,7 @@ def get_drinks():
 @requires_auth('get:drinks-detail')
 def get_drink_details(token):
 
+    #how to get user_id
     # print(payload.get('sub'))
 
     drinks = Drink.query.all()
