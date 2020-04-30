@@ -51,6 +51,9 @@ def get_drinks():
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
 def get_drink_details(token):
+
+    # print(payload.get('sub'))
+
     drinks = Drink.query.all()
 
     return jsonify({
